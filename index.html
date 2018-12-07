@@ -1,0 +1,199 @@
+<html>
+
+<head>
+    <script src="https://unpkg.com/react@15/dist/react.min.js"> </script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js">
+    </script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+</head>
+
+<body>
+    
+    <h2>First example of updating using a binding method / taking events from button</h2>
+    <div id="root"></div>
+    
+    <h2>Second example of taking information from a class to have a name be shown (Taylor in this case)</h2>
+    <div id="tutorial1"></div>
+    
+    <h2>Third example using dynamic updating and javascript functions to keep a running timer</h2>
+    <div id="tutorial2"></div>
+    
+    <h2>Fourth example of small "ToDo" application</h2>
+    <div id="tutorial3"></div>
+    
+    <script type="text/babel">
+
+        class Hello extends React.Component {
+            
+            constructor(props){
+                
+                
+                super(props);
+                this.state = {
+                    value: '',
+                    message: 'my friend (from state)!',
+                    name: ''
+                };
+                
+                this.handleChange = this.handleChange.bind(this);
+                this.handleSubmit = this.handleSubmit.bind(this);
+
+                this.updateMessage = this.updateMessage.bind(this);
+            }
+            
+            updateMessage() {
+                this.setState({
+                    message: "my friend (from changed state)!"
+                });
+            }
+
+            handleChange(event) {
+                this.setState({value: event.target.value});
+            }
+            
+            handleSubmit(event) {
+                this.setSate({
+                   name: event.target.value 
+                });
+            }
+            
+            render() {
+                return (
+                    <div>
+                        <h3>Hello {this.state.message}!</h3>
+                        
+                        <h4>Your name is {this.state.value}</h4>
+                        <form onSubmit={this.handleSubmit}>
+                            <label>
+                                Name:
+                                <input type="text" value={this.state.value} onChange={this.handleChange} />
+                            </label>
+                        </form>
+                        
+                        <button onClick={this.updateMessage}>Click Me!</button>
+                        
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(
+            <Hello message="my friend" />, 
+            document.getElementById("root")
+        );
+
+        class HelloMessage extends React.Component {
+          render() {
+            return (
+              <div>
+                Hello {this.props.name}
+              </div>
+            );
+          }
+        }
+
+        ReactDOM.render(
+          <HelloMessage name="Taylor" />,
+          document.getElementById("tutorial1")
+        );
+
+
+
+        class Timer extends React.Component {
+          constructor(props) {
+            super(props);
+            this.state = { seconds: 0 };
+          }
+
+          tick() {
+            this.setState(state => ({
+              seconds: state.seconds + 1
+            }));
+          }
+
+          componentDidMount() {
+            this.interval = setInterval(() => this.tick(), 1000);
+          }
+
+          componentWillUnmount() {
+            clearInterval(this.interval);
+          }
+
+          render() {
+            return (
+              <div>
+                Seconds: {this.state.seconds}
+              </div>
+            );
+          }
+        }
+
+        ReactDOM.render(<Timer />, document.getElementById("tutorial2"));
+
+        class TodoApp extends React.Component {
+          constructor(props) {
+            super(props);
+            this.state = { items: [], text: '' };
+            this.handleChange = this.handleChange.bind(this);
+            this.handleSubmit = this.handleSubmit.bind(this);
+          }
+
+          render() {
+            return (
+              <div>
+                <h3>TODO</h3>
+                <TodoList items={this.state.items} />
+                <form onSubmit={this.handleSubmit}>
+                  <label htmlFor="new-todo">
+                    What needs to be done?
+                  </label>
+                  <input
+                    id="new-todo"
+                    onChange={this.handleChange}
+                    value={this.state.text}
+                  />
+                  <button>
+                    Add #{this.state.items.length + 1}
+                  </button>
+                </form>
+              </div>
+            );
+          }
+
+          handleChange(e) {
+            this.setState({ text: e.target.value });
+          }
+
+          handleSubmit(e) {
+            e.preventDefault();
+            if (!this.state.text.length) {
+              return;
+            }
+            const newItem = {
+              text: this.state.text,
+              id: Date.now()
+            };
+            this.setState(state => ({
+              items: state.items.concat(newItem),
+              text: ''
+            }));
+          }
+        }
+
+        class TodoList extends React.Component {
+          render() {
+            return (
+              <ul>
+                {this.props.items.map(item => (
+                  <li key={item.id}>{item.text}</li>
+                ))}
+              </ul>
+            );
+          }
+        }
+
+        ReactDOM.render(<TodoApp />, document.getElementById("tutorial3"));
+    </script>
+</body>
+
+</html>
